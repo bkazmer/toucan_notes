@@ -24,11 +24,11 @@ RSpec.describe NotesController, type: :controller do
   # Note. As you add validations to Note, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    { text: 'test', url: 'http://stackoverflow.com/questions/24682671/how-to-complete-the-rspec-put-controller-test-from-scaffold' }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { text: '' }
   }
 
   # This should return the minimal set of values that should be in the session
@@ -52,21 +52,6 @@ RSpec.describe NotesController, type: :controller do
     end
   end
 
-  describe "GET #new" do
-    it "assigns a new note as @note" do
-      get :new, params: {}, session: valid_session
-      expect(assigns(:note)).to be_a_new(Note)
-    end
-  end
-
-  describe "GET #edit" do
-    it "assigns the requested note as @note" do
-      note = Note.create! valid_attributes
-      get :edit, params: {id: note.to_param}, session: valid_session
-      expect(assigns(:note)).to eq(note)
-    end
-  end
-
   describe "POST #create" do
     context "with valid params" do
       it "creates a new Note" do
@@ -81,9 +66,9 @@ RSpec.describe NotesController, type: :controller do
         expect(assigns(:note)).to be_persisted
       end
 
-      it "redirects to the created note" do
+      it "return 201 Created" do
         post :create, params: {note: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(Note.last)
+        expect(response).to have_http_status(201)
       end
     end
 
@@ -93,9 +78,9 @@ RSpec.describe NotesController, type: :controller do
         expect(assigns(:note)).to be_a_new(Note)
       end
 
-      it "re-renders the 'new' template" do
+      it "returns 422 Unprocessable Entity" do
         post :create, params: {note: invalid_attributes}, session: valid_session
-        expect(response).to render_template("new")
+        expect(response).to have_http_status(422)
       end
     end
   end
@@ -103,14 +88,15 @@ RSpec.describe NotesController, type: :controller do
   describe "PUT #update" do
     context "with valid params" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        { text: 'tested', url: '' }
       }
 
       it "updates the requested note" do
         note = Note.create! valid_attributes
         put :update, params: {id: note.to_param, note: new_attributes}, session: valid_session
         note.reload
-        skip("Add assertions for updated state")
+        expect('tested').to eq(note.text)
+        expect('').to eq(note.url)
       end
 
       it "assigns the requested note as @note" do
@@ -119,10 +105,10 @@ RSpec.describe NotesController, type: :controller do
         expect(assigns(:note)).to eq(note)
       end
 
-      it "redirects to the note" do
+      it "returns 200 OK" do
         note = Note.create! valid_attributes
         put :update, params: {id: note.to_param, note: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(note)
+        expect(response).to have_http_status(200)
       end
     end
 
@@ -133,10 +119,10 @@ RSpec.describe NotesController, type: :controller do
         expect(assigns(:note)).to eq(note)
       end
 
-      it "re-renders the 'edit' template" do
+      it "returns 422 Unprocessable Entity" do
         note = Note.create! valid_attributes
         put :update, params: {id: note.to_param, note: invalid_attributes}, session: valid_session
-        expect(response).to render_template("edit")
+        expect(response).to have_http_status(422)
       end
     end
   end
@@ -149,10 +135,10 @@ RSpec.describe NotesController, type: :controller do
       }.to change(Note, :count).by(-1)
     end
 
-    it "redirects to the notes list" do
+    it "returns 204 No content" do
       note = Note.create! valid_attributes
       delete :destroy, params: {id: note.to_param}, session: valid_session
-      expect(response).to redirect_to(notes_url)
+      expect(response).to have_http_status(204)
     end
   end
 
